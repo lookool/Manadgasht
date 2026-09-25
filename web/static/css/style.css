@@ -1,0 +1,406 @@
+/* =========================================================
+   استایل سایت مانادگشت — کاملاً محلی، بدون وابستگی به اینترنت
+   پالت رنگ و فونت برگرفته از manadgasht.com (سبز/سفید/قرمز)
+   با چاشنی چیدمانی الهام‌گرفته از arandtour.com (بنر و کارت‌های
+   دسته‌بندی) که فقط برای جذابیت بصری اضافه شده.
+   ========================================================= */
+
+:root {
+    /* خنثی/متن */
+    --ink-900: #16241c;
+    --ink-700: #374151;
+    --ink-500: #6b7280;
+    --surface:     #ffffff;
+    --surface-alt: #f3f8f5;
+
+    /* سبز برند (رنگ اصلی دکمه‌ها، لوگو، لینک‌های فعال) */
+    --green-50:  #eafaf1;
+    --green-100: #d7f1e0;
+    --green-300: #6cc99a;
+    --green-500: #1f9d5f;
+    --green-600: #1c8049;
+    --green-700: #146238;
+
+    /* قرمز تاکیدی (لینک "مطالعه بیشتر"، حالت فعال منو، فلش‌ها) */
+    --red-500: #e04343;
+    --red-600: #c62f2f;
+
+    /* بنر پررنگ الهام‌گرفته از آرندتور، فقط برای یک بخش خاص */
+    --maroon-700: #5c1a1a;
+
+    /* اندازه‌ی نوار هدر، برای محاسبه‌ی sticky-top محتوای زیرش */
+    --header-height: 84px;
+}
+
+/* ---------- Reset پایه ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, h3, p, ul { margin: 0; }
+ul { list-style: none; padding: 0; }
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+button { font: inherit; background: none; border: none; cursor: pointer; }
+
+body {
+    font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
+    background-color: var(--surface);
+    color: var(--ink-900);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* =========================================================
+   ابزارهای عمومی چیدمان (رنگ‌ندارن، فقط ساختاری‌ان)
+   ========================================================= */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.25rem; }
+.flex        { display: flex; }
+.flex-1      { flex: 1 1 0%; }
+.flex-col    { flex-direction: column; }
+.grid        { display: grid; }
+.items-center     { align-items: center; }
+.items-start      { align-items: flex-start; }
+.justify-between  { justify-content: space-between; }
+.justify-center   { justify-content: center; }
+.hidden      { display: none; }
+.block       { display: block; }
+.text-center { text-align: center; }
+.relative { position: relative; }
+.overflow-hidden { overflow: hidden; }
+
+.gap-2  { gap: .5rem; }
+.gap-3  { gap: .75rem; }
+.gap-6  { gap: 1.5rem; }
+.gap-8  { gap: 2rem; }
+
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.mt-2  { margin-top: .5rem; }
+.mt-3  { margin-top: .75rem; }
+.mt-4  { margin-top: 1rem; }
+.mt-6  { margin-top: 1.5rem; }
+.mt-10 { margin-top: 2.5rem; }
+.mb-3  { margin-bottom: .75rem; }
+.mb-6  { margin-bottom: 1.5rem; }
+.mb-8  { margin-bottom: 2rem; }
+.py-4  { padding-top: 1rem; padding-bottom: 1rem; }
+.py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+.py-16 { padding-top: 4rem; padding-bottom: 4rem; }
+
+.text-xs  { font-size: .75rem; }
+.text-sm  { font-size: .875rem; line-height: 1.6; }
+.text-lg  { font-size: 1.125rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-3xl { font-size: 1.9rem; }
+.font-bold      { font-weight: 700; }
+.font-extrabold { font-weight: 800; }
+.leading-8 { line-height: 2rem; }
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.prose { line-height: 1.9; }
+.prose p { margin-bottom: 1rem; }
+
+.rounded-lg  { border-radius: .75rem; }
+.rounded-xl  { border-radius: 1rem; }
+.rounded-full{ border-radius: 9999px; }
+.shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.shadow-md { box-shadow: 0 8px 20px rgba(22,36,28,.08); }
+.object-cover { object-fit: cover; }
+.transition { transition: all .2s ease; }
+.w-full { width: 100%; }
+
+@media (min-width: 640px) { .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (min-width: 768px) {
+    .md\:hidden { display: none; }
+    .md\:flex { display: flex; }
+    .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .md\:flex-row { flex-direction: row; }
+    .md\:text-4xl { font-size: 2.5rem; }
+}
+@media (min-width: 1024px) {
+    .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+}
+
+/* =========================================================
+   دکمه‌ها
+   ========================================================= */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    padding: .7rem 1.4rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: .9rem;
+    transition: background-color .2s ease, transform .1s ease;
+}
+.btn-green { background-color: var(--green-500); color: #fff; }
+.btn-green:hover { background-color: var(--green-600); }
+.btn-outline { border: 1.5px solid var(--green-500); color: var(--green-700); background: #fff; }
+.btn-outline:hover { background-color: var(--green-50); }
+.btn-block { width: 100%; }
+
+/* =========================================================
+   هدر سایت
+   ========================================================= */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: var(--surface);
+    box-shadow: 0 2px 10px rgba(22,36,28,.06);
+}
+.site-header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+    gap: 1.5rem;
+}
+.brand { display: flex; align-items: center; gap: .5rem; font-size: 1.4rem; font-weight: 800; color: var(--green-700); }
+.brand img { height: 42px; width: auto; }
+
+.main-nav { display: none; align-items: center; gap: 1.75rem; font-size: .95rem; font-weight: 600; color: var(--ink-700); }
+@media (min-width: 900px) { .main-nav { display: flex; } }
+.main-nav a { padding: .3rem 0; border-bottom: 2px solid transparent; }
+.main-nav a:hover { color: var(--green-600); }
+.main-nav a.active { color: var(--red-500); border-color: var(--red-500); }
+
+.phone-pill {
+    display: none;
+    align-items: center;
+    gap: .5rem;
+    background-color: var(--green-50);
+    border: 1.5px solid var(--green-300);
+    color: var(--green-700);
+    font-weight: 700;
+    border-radius: 9999px;
+    padding: .5rem 1.1rem;
+    font-size: .9rem;
+    direction: ltr;
+}
+@media (min-width: 900px) { .phone-pill { display: inline-flex; } }
+
+.menu-toggle { display: inline-flex; }
+@media (min-width: 900px) { .menu-toggle { display: none; } }
+
+.mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    padding: .5rem 1.25rem 1.25rem;
+    font-weight: 600;
+    color: var(--ink-700);
+    border-top: 1px solid var(--surface-alt);
+}
+.mobile-nav a { padding: .6rem 0; }
+
+/* =========================================================
+   هیرو (صفحه‌ی اصلی)
+   ========================================================= */
+.hero {
+    position: relative;
+    background: linear-gradient(180deg, var(--green-50) 0%, #ffffff 65%);
+    overflow: hidden;
+}
+.hero-inner {
+    position: relative;
+    z-index: 2;
+    padding: 4rem 0 3rem;
+    max-width: 640px;
+}
+.hero h1 { font-size: 2rem; font-weight: 800; color: var(--ink-900); line-height: 1.4; }
+@media (min-width: 768px) { .hero h1 { font-size: 2.6rem; } }
+.hero p { margin-top: .75rem; color: var(--ink-500); font-size: 1.05rem; }
+
+.search-box {
+    margin-top: 2rem;
+    display: flex;
+    background: #fff;
+    border-radius: 9999px;
+    box-shadow: 0 10px 30px rgba(22,36,28,.12);
+    padding: .4rem;
+    max-width: 480px;
+}
+.search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: .6rem 1rem;
+    font-family: inherit;
+    font-size: .95rem;
+    color: var(--ink-900);
+}
+.search-box button {
+    background-color: var(--green-500);
+    color: #fff;
+    border-radius: 9999px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.search-box button:hover { background-color: var(--green-600); }
+
+.hero-art {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: .9;
+}
+@media (max-width: 900px) { .hero-art { opacity: .35; } }
+
+/* =========================================================
+   بخش‌های عمومی صفحه
+   ========================================================= */
+.section-alt { background-color: var(--surface-alt); }
+.section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.75rem;
+}
+.section-title h2 { font-size: 1.5rem; font-weight: 800; color: var(--ink-900); }
+@media (min-width: 768px) { .section-title h2 { font-size: 1.8rem; } }
+.section-title a { color: var(--green-700); font-weight: 700; font-size: .9rem; }
+.section-title a:hover { text-decoration: underline; }
+
+/* دسته‌های تور (الهام‌گرفته از چیدمان کارت‌های دسته‌بندی آرندتور) */
+.category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+@media (min-width: 768px) { .category-grid { grid-template-columns: repeat(4, 1fr); } }
+.category-tile {
+    background: #fff;
+    border: 1px solid var(--green-100);
+    border-radius: 1rem;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.category-tile:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(22,36,28,.1); }
+.category-tile .icon {
+    width: 52px; height: 52px; margin: 0 auto .75rem;
+    border-radius: 50%;
+    background-color: var(--green-50);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--green-600);
+}
+.category-tile span { font-weight: 700; color: var(--ink-900); }
+
+/* کارت تور/هتل و بلاگ */
+.card {
+    background: #fff;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(22,36,28,.06);
+    transition: box-shadow .2s ease, transform .2s ease;
+    display: block;
+}
+.card:hover { box-shadow: 0 16px 32px rgba(22,36,28,.12); transform: translateY(-2px); }
+.card-image { position: relative; height: 190px; background-color: var(--surface-alt); overflow: hidden; }
+.card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
+.card:hover .card-image img { transform: scale(1.05); }
+.card-body { padding: 1.1rem 1.25rem; }
+.card-body h3 { font-weight: 700; color: var(--ink-900); font-size: 1.05rem; }
+.card-body .location { color: var(--ink-500); font-size: .85rem; margin-top: .25rem; }
+.card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; }
+.price-label { font-size: .75rem; color: var(--ink-500); }
+.price { color: var(--green-700); font-weight: 800; font-size: 1.05rem; }
+.tag-badge {
+    position: absolute; top: .75rem; right: .75rem;
+    background-color: var(--green-600);
+    color: #fff; font-size: .7rem; font-weight: 700;
+    padding: .25rem .7rem; border-radius: 9999px;
+}
+.read-more { color: var(--red-500); font-weight: 700; font-size: .85rem; }
+.read-more:hover { text-decoration: underline; }
+
+/* بنر پیشنهادی تیره، الهام‌گرفته از بخش «تورهای پیشنهادی» آرندتور */
+.promo-banner {
+    background-color: var(--maroon-700);
+    color: #fff;
+    padding: 3rem 0;
+}
+.promo-banner h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; }
+.promo-banner .card { background: rgba(255,255,255,.06); box-shadow: none; }
+.promo-banner .card-body h3 { color: #fff; font-size: .95rem; }
+
+/* =========================================================
+   فوتر
+   ========================================================= */
+.site-footer { background-color: var(--surface-alt); margin-top: 4rem; }
+.footer-links h4 { color: var(--green-700); font-weight: 800; margin-bottom: .9rem; }
+.footer-links ul li { margin-bottom: .5rem; color: var(--ink-700); font-size: .9rem; }
+.footer-links ul li a:hover { color: var(--green-700); }
+.footer-bottom {
+    border-top: 1px solid rgba(22,36,28,.08);
+    padding: 1rem 0;
+    text-align: center;
+    font-size: .8rem;
+    color: var(--ink-500);
+}
+.footer-contact-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    text-align: center;
+    box-shadow: 0 6px 16px rgba(22,36,28,.05);
+}
+.footer-contact-card .icon {
+    width: 46px; height: 46px; margin: 0 auto .6rem;
+    border-radius: 50%; background: var(--green-50);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--green-600);
+}
+
+/* =========================================================
+   ویجت شناور تماس (شبیه سایت اصلی: تماس/واتساپ)
+   ========================================================= */
+.floating-widget {
+    position: fixed;
+    left: 1rem;
+    bottom: 1rem;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+}
+.floating-btn {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(0,0,0,.2);
+}
+.floating-btn.call { background-color: var(--ink-900); }
+.floating-btn.whatsapp { background-color: #25d366; }
+
+/* جزئیات تور/پست (توضیحات طولانی) */
+.detail-hero {
+    height: 320px;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    background-color: var(--surface-alt);
+}
+.detail-hero img { width: 100%; height: 100%; object-fit: cover; }
+.price-box {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 10px 24px rgba(22,36,28,.08);
+    padding: 1.5rem;
+    text-align: center;
+    min-width: 220px;
+}

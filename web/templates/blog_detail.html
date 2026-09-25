@@ -1,0 +1,12 @@
+{{define "content"}}
+<article class="container py-16" style="max-width:760px;">
+    <div class="detail-hero mb-8" style="height:260px;">
+        {{if .Post.CoverImage}}<img src="{{.Post.CoverImage}}" alt="{{.Post.Title}}">{{end}}
+    </div>
+
+    <h1 class="text-3xl font-extrabold">{{.Post.Title}}</h1>
+    <div class="prose mt-6">
+        {{.Post.Content}}
+    </div>
+</article>
+{{end}}

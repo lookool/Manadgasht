@@ -1,0 +1,24 @@
+{{define "content"}}
+<section class="container py-16">
+
+    <div class="detail-hero mb-8">
+        {{if .Package.CoverImage}}<img src="{{.Package.CoverImage}}" alt="{{.Package.Title}}">{{end}}
+    </div>
+
+    <div class="flex flex-col md:flex-row items-start justify-between gap-6">
+        <div>
+            <h1 class="text-3xl font-extrabold">{{.Package.Title}}</h1>
+            <p class="mt-2" style="color:var(--ink-500)">{{.Package.Location}}</p>
+        </div>
+        <div class="price-box">
+            <div class="price-label">قیمت</div>
+            <div class="price text-2xl mt-2">{{formatPrice .Package.Price}} تومان</div>
+            <a href="/contact" class="btn btn-green btn-block mt-4">رزرو با تماس / واتساپ</a>
+        </div>
+    </div>
+
+    <div class="prose mt-10">
+        {{.Package.Description}}
+    </div>
+</section>
+{{end}}

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMid slice">
+  <g fill="none" stroke="#1f9d5f" stroke-width="1.4" opacity="0.35">
+    <!-- کوه‌های ساده -->
+    <path d="M700 420 L850 260 L950 380 L1050 230 L1200 420" />
+    <path d="M650 420 L780 300 L880 400 L980 320 L1100 420" />
+    <!-- مسیر پرواز نقطه‌چین -->
+    <path d="M720 160 C 850 90, 1000 90, 1150 180" stroke-dasharray="6 10" />
+    <!-- هواپیمای ساده -->
+    <g transform="translate(1120,168) rotate(20)">
+      <path d="M0 0 L28 6 L0 12 L6 6 Z" fill="#1f9d5f" stroke="none" opacity="0.6"/>
+    </g>
+    <!-- خورشید/دایره تزئینی -->
+    <circle cx="1020" cy="120" r="34" />
+  </g>
+</svg>
