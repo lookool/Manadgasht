@@ -13,6 +13,7 @@ import (
 	"manadgasht/internal/config"
 	"manadgasht/internal/database"
 	"manadgasht/internal/handlers"
+	"manadgasht/internal/middleware"
 	"manadgasht/internal/repository"
 	"manadgasht/internal/router"
 	"manadgasht/internal/service"
@@ -30,12 +31,22 @@ func main() {
 	// فایل تنها جایی است که همه رو به هم وصل می‌کنه.
 	packageRepo := repository.NewPackageRepository(db)
 	blogRepo := repository.NewBlogRepository(db)
+	userRepo := repository.NewUserRepository(db)
+	agentRepo := repository.NewAgentRepository(db)
+	sessionRepo := repository.NewSessionRepository(db)
+	orderRepo := repository.NewOrderRepository(db)
+	withdrawalRepo := repository.NewWithdrawalRepository(db)
+	commissionRepo := repository.NewCommissionRepository(db)
 
 	packageService := service.NewPackageService(packageRepo)
 	blogService := service.NewBlogService(blogRepo)
+	authService := service.NewAuthService(userRepo, agentRepo, sessionRepo)
+	orderService := service.NewOrderService(db, packageRepo, orderRepo, agentRepo, userRepo, commissionRepo)
+	walletService := service.NewWalletService(db, agentRepo, withdrawalRepo)
 
-	h := handlers.New(packageService, blogService)
-	r := router.New(h)
+	h := handlers.New(packageService, blogService, authService, orderService, walletService)
+	authMiddleware := middleware.NewAuth(authService)
+	r := router.New(h, authMiddleware)
 
 	srv := &http.Server{
 		Addr:         ":" + cfg.AppPort,
