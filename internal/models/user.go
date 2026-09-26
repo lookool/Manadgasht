@@ -9,6 +9,12 @@ type User struct {
 	Email        string `gorm:"size:150;uniqueIndex;not null"`
 	Phone        string `gorm:"size:20;uniqueIndex"`
 	PasswordHash string `gorm:"size:255;not null"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+
+	// ReferredByAgentID اگر کاربر موقع ثبت‌نام یک کد معرف معتبر وارد
+	// کرده باشد پر می‌شود؛ خریدهای بعدی این کاربر به این همکار کمیسیون
+	// می‌دهند.
+	ReferredByAgentID *uint
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

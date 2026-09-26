@@ -45,24 +45,27 @@ func autoMigrate(db *gorm.DB) error {
 		&models.CommissionSetting{},
 		&models.Order{},
 		&models.BlogPost{},
+		&models.Session{},
+		&models.WithdrawalRequest{},
 	)
 }
 
 // seedCommissionDefaults اگر تنظیمات کمیسیون هنوز در دیتابیس نباشد،
-// مقادیر پیش‌فرض (صفر درصد) را می‌سازد تا ادمین بعداً از پنل مقدارشان
-// را عوض کند.
+// مقادیر پیش‌فرض اولیه (طبق نمونه‌ای که خودتون گفتید: ۵٪ تور، ۲٪ هتل)
+// را می‌سازد؛ این‌ها فقط نقطه‌ی شروع هستن و بعداً از پنل ادمین قابل
+// تغییرن.
 func seedCommissionDefaults(db *gorm.DB) {
-	defaults := []models.PackageType{
-		models.PackageTypeTour,
-		models.PackageTypeHotel,
-		models.PackageTypeTourHotel,
+	defaults := map[models.PackageType]float64{
+		models.PackageTypeTour:      5,
+		models.PackageTypeHotel:     2,
+		models.PackageTypeTourHotel: 4,
 	}
 
-	for _, t := range defaults {
+	for t, percentage := range defaults {
 		var count int64
 		db.Model(&models.CommissionSetting{}).Where("type = ?", t).Count(&count)
 		if count == 0 {
-			db.Create(&models.CommissionSetting{Type: t, Percentage: 0})
+			db.Create(&models.CommissionSetting{Type: t, Percentage: percentage})
 		}
 	}
 }
