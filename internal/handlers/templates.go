@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"manadgasht/internal/middleware"
 )
 
 // funcMap توابع کمکی قابل استفاده داخل فایل‌های html/template.
@@ -45,6 +47,12 @@ func init() {
 		"blog_detail.html",
 		"about.html",
 		"contact.html",
+		"user_register.html",
+		"user_login.html",
+		"account.html",
+		"agent_register.html",
+		"agent_login.html",
+		"agent_dashboard.html",
 	}
 
 	base := template.Must(template.New("base.html").Funcs(funcMap).ParseFiles(
@@ -65,8 +73,9 @@ func init() {
 
 // render یک صفحه‌ی خاص را به همراه لایوت اصلی (base) رندر می‌کند.
 // data باید یک map باشد که داده‌های مورد نیاز صفحه را در بر دارد؛
-// CurrentYear همیشه خودکار اضافه می‌شود.
-func render(w http.ResponseWriter, name string, data map[string]interface{}) {
+// CurrentYear و CurrentUser/CurrentAgent (برای هدر) همیشه خودکار
+// اضافه می‌شوند.
+func render(w http.ResponseWriter, r *http.Request, name string, data map[string]interface{}) {
 	tmpl, ok := pages[name]
 	if !ok {
 		log.Println("تمپلیت پیدا نشد:", name)
@@ -83,6 +92,15 @@ func render(w http.ResponseWriter, name string, data map[string]interface{}) {
 	// برای مشخص‌کردن آیتم فعال منو، همیشه با eq مقایسه‌ش می‌کنه.
 	if _, ok := data["Region"]; !ok {
 		data["Region"] = ""
+	}
+
+	// هدر روی همه‌ی صفحات نمایش داده می‌شه و باید بدونه کاربر/همکار
+	// لاگین کرده یا نه، پس این‌ها همیشه (نه فقط تو صفحات مربوطه) ست میشن.
+	if _, ok := data["CurrentUser"]; !ok {
+		data["CurrentUser"] = middleware.CurrentUser(r)
+	}
+	if _, ok := data["CurrentAgent"]; !ok {
+		data["CurrentAgent"] = middleware.CurrentAgent(r)
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

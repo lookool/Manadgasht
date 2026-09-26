@@ -15,7 +15,7 @@ func (h *Handlers) Home(w http.ResponseWriter, r *http.Request) {
 		logError("بارگذاری مطالب اخیر بلاگ", err)
 	}
 
-	render(w, "home.html", map[string]interface{}{
+	render(w, r, "home.html", map[string]interface{}{
 		"Title":    "خانه",
 		"Packages": packages,
 		"Posts":    posts,

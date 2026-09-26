@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+
+	"manadgasht/internal/middleware"
 )
 
 // PackagesList همه‌ی تور/هتل‌های فعال را نشان می‌دهد؛ با پارامترهای
@@ -35,7 +37,7 @@ func (h *Handlers) PackagesList(w http.ResponseWriter, r *http.Request) {
 		title = "پکیج تور + هتل"
 	}
 
-	render(w, "packages.html", map[string]interface{}{
+	render(w, r, "packages.html", map[string]interface{}{
 		"Title":    title,
 		"Packages": packages,
 		"Region":   region,
@@ -53,8 +55,11 @@ func (h *Handlers) PackageDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render(w, "package_detail.html", map[string]interface{}{
-		"Title":   pkg.Title,
-		"Package": pkg,
+	render(w, r, "package_detail.html", map[string]interface{}{
+		"Title":        pkg.Title,
+		"Package":      pkg,
+		"CurrentUser":  middleware.CurrentUser(r),
+		"CurrentAgent": middleware.CurrentAgent(r),
+		"OrderError":   r.URL.Query().Get("error"),
 	})
 }

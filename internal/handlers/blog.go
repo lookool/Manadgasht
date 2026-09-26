@@ -15,7 +15,7 @@ func (h *Handlers) BlogList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render(w, "blog.html", map[string]interface{}{
+	render(w, r, "blog.html", map[string]interface{}{
 		"Title": "بلاگ",
 		"Posts": posts,
 	})
@@ -31,7 +31,7 @@ func (h *Handlers) BlogDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render(w, "blog_detail.html", map[string]interface{}{
+	render(w, r, "blog_detail.html", map[string]interface{}{
 		"Title": post.Title,
 		"Post":  post,
 	})
