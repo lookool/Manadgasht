@@ -1,0 +1,93 @@
+{{define "content"}}
+<section class="container py-16">
+    <div class="section-title"><h2>پنل همکاران</h2></div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="stat-card">
+            <div class="label">کد معرف شما</div>
+            <div class="referral-badge mt-2">{{.Agent.ReferralCode}}</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">{{formatPrice .Agent.Balance}}</div>
+            <div class="label">موجودی کیف‌پول (تومان)</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">{{len .Orders}}</div>
+            <div class="label">تعداد خریدهای معرفی‌شده</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div>
+            <h3 class="font-bold mb-3">تاریخچه‌ی کمیسیون‌ها</h3>
+            {{if .Orders}}
+            <div class="card" style="padding:1rem; overflow-x:auto;">
+                <table class="simple-table">
+                    <thead><tr><th>تاریخ</th><th>مبلغ خرید</th><th>کمیسیون</th></tr></thead>
+                    <tbody>
+                        {{range .Orders}}
+                        <tr>
+                            <td>{{.CreatedAt.Format "2006-01-02"}}</td>
+                            <td>{{formatPrice .TotalPrice}}</td>
+                            <td>{{formatPrice .CommissionAmount}}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+            {{else}}
+            <p style="color:var(--ink-500)">هنوز خریدی با کد معرف شما ثبت نشده.</p>
+            {{end}}
+
+            <h3 class="font-bold mb-3 mt-6">درخواست‌های برداشت</h3>
+            {{if .Withdrawals}}
+            <div class="card" style="padding:1rem; overflow-x:auto;">
+                <table class="simple-table">
+                    <thead><tr><th>تاریخ</th><th>مبلغ</th><th>وضعیت</th></tr></thead>
+                    <tbody>
+                        {{range .Withdrawals}}
+                        <tr>
+                            <td>{{.CreatedAt.Format "2006-01-02"}}</td>
+                            <td>{{formatPrice .Amount}}</td>
+                            <td><span class="badge badge-{{.Status}}">{{.Status}}</span></td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+            {{else}}
+            <p style="color:var(--ink-500)">هنوز درخواست برداشتی ثبت نشده.</p>
+            {{end}}
+        </div>
+
+        <div>
+            <h3 class="font-bold mb-3">درخواست برداشت جدید</h3>
+            <div class="card" style="padding:1.5rem;">
+                <form method="post" action="/agent/withdrawals">
+                    <div class="form-group">
+                        <label>مبلغ (تومان)</label>
+                        <input type="number" name="amount" min="1" required>
+                        {{if .WithdrawalErrors.Amount}}<div class="field-error">{{.WithdrawalErrors.Amount}}</div>{{end}}
+                    </div>
+                    <div class="form-group">
+                        <label>شماره کارت</label>
+                        <input type="text" name="card_number" value="{{.Agent.CardNumber}}" style="direction:ltr;" required>
+                        {{if .WithdrawalErrors.CardNumber}}<div class="field-error">{{.WithdrawalErrors.CardNumber}}</div>{{end}}
+                    </div>
+                    <div class="form-group">
+                        <label>شماره شبا</label>
+                        <input type="text" name="iban" placeholder="IR..." style="direction:ltr;" required>
+                        {{if .WithdrawalErrors.IBAN}}<div class="field-error">{{.WithdrawalErrors.IBAN}}</div>{{end}}
+                    </div>
+                    <button type="submit" class="btn btn-green btn-block">ثبت درخواست برداشت</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" action="/agent/logout" class="mt-6">
+        <button type="submit" class="btn btn-outline">خروج از حساب</button>
+    </form>
+</section>
+{{end}}

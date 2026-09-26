@@ -1,0 +1,46 @@
+{{define "content"}}
+<section class="container py-16">
+    <div class="auth-card">
+        <h1 class="text-2xl font-extrabold mb-6" style="text-align:center;">ثبت‌نام همکاران (تورلیدر)</h1>
+
+        <form method="post" action="/agent/register">
+            <div class="form-group">
+                <label>نام و نام‌خانوادگی</label>
+                <input type="text" name="full_name" value="{{if .Form}}{{.Form.FullName}}{{end}}" required>
+                {{if .Errors.FullName}}<div class="field-error">{{.Errors.FullName}}</div>{{end}}
+            </div>
+            <div class="form-group">
+                <label>کد ملی</label>
+                <input type="text" name="national_id" value="{{if .Form}}{{.Form.NationalID}}{{end}}" required>
+                {{if .Errors.NationalID}}<div class="field-error">{{.Errors.NationalID}}</div>{{end}}
+            </div>
+            <div class="form-group">
+                <label>ایمیل</label>
+                <input type="email" name="email" value="{{if .Form}}{{.Form.Email}}{{end}}" required>
+                {{if .Errors.Email}}<div class="field-error">{{.Errors.Email}}</div>{{end}}
+            </div>
+            <div class="form-group">
+                <label>شماره تماس</label>
+                <input type="text" name="phone" value="{{if .Form}}{{.Form.Phone}}{{end}}" required>
+                {{if .Errors.Phone}}<div class="field-error">{{.Errors.Phone}}</div>{{end}}
+            </div>
+            <div class="form-group">
+                <label>شماره کارت</label>
+                <input type="text" name="card_number" value="{{if .Form}}{{.Form.CardNumber}}{{end}}" style="direction:ltr;" required>
+                {{if .Errors.CardNumber}}<div class="field-error">{{.Errors.CardNumber}}</div>{{end}}
+            </div>
+            <div class="form-group">
+                <label>رمز عبور</label>
+                <input type="password" name="password" required>
+                {{if .Errors.Password}}<div class="field-error">{{.Errors.Password}}</div>{{end}}
+            </div>
+
+            <button type="submit" class="btn btn-green btn-block">ثبت‌نام همکاری</button>
+        </form>
+
+        <div class="auth-switch">
+            قبلاً ثبت‌نام کردی؟ <a href="/agent/login">وارد شو</a>
+        </div>
+    </div>
+</section>
+{{end}}

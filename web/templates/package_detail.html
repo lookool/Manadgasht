@@ -13,7 +13,24 @@
         <div class="price-box">
             <div class="price-label">قیمت</div>
             <div class="price text-2xl mt-2">{{formatPrice .Package.Price}} تومان</div>
-            <a href="/contact" class="btn btn-green btn-block mt-4">رزرو با تماس / واتساپ</a>
+
+            {{if eq .OrderError "order"}}<div class="field-error mt-2">مشکلی در ثبت سفارش پیش اومد.</div>{{end}}
+            {{if eq .OrderError "balance"}}<div class="field-error mt-2">موجودی کیف‌پول کافی نیست.</div>{{end}}
+
+            {{if .CurrentUser}}
+                <form method="post" action="/packages/{{.Package.Slug}}/buy">
+                    <button type="submit" class="btn btn-green btn-block mt-4">خرید آنلاین</button>
+                </form>
+            {{else if .CurrentAgent}}
+                <form method="post" action="/packages/{{.Package.Slug}}/buy-wallet">
+                    <button type="submit" class="btn btn-green btn-block mt-4">خرید با موجودی کیف‌پول</button>
+                </form>
+                <p class="text-xs mt-2" style="color:var(--ink-500)">موجودی فعلی: {{formatPrice .CurrentAgent.Balance}} تومان</p>
+            {{else}}
+                <a href="/login" class="btn btn-green btn-block mt-4">ورود و خرید آنلاین</a>
+            {{end}}
+
+            <a href="/contact" class="btn btn-outline btn-block mt-3">رزرو با تماس / واتساپ</a>
         </div>
     </div>
 

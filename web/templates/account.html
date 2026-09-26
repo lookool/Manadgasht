@@ -1,0 +1,36 @@
+{{define "content"}}
+<section class="container py-16">
+    <div class="section-title"><h2>پنل کاربری</h2></div>
+
+    <div class="card" style="padding:1.5rem; margin-bottom:2rem;">
+        <p><strong>{{.User.FullName}}</strong></p>
+        <p class="text-sm mt-2" style="color:var(--ink-500)">{{.User.Email}} — {{.User.Phone}}</p>
+    </div>
+
+    <h3 class="font-bold mb-3">تاریخچه‌ی خریدها</h3>
+    {{if .Orders}}
+    <div class="card" style="padding:1rem; overflow-x:auto;">
+        <table class="simple-table">
+            <thead>
+                <tr><th>تاریخ</th><th>مبلغ</th><th>وضعیت</th></tr>
+            </thead>
+            <tbody>
+                {{range .Orders}}
+                <tr>
+                    <td>{{.CreatedAt.Format "2006-01-02 15:04"}}</td>
+                    <td>{{formatPrice .TotalPrice}} تومان</td>
+                    <td><span class="badge badge-{{.Status}}">{{.Status}}</span></td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+    {{else}}
+    <p style="color:var(--ink-500)">هنوز خریدی ثبت نکرده‌اید.</p>
+    {{end}}
+
+    <form method="post" action="/logout" class="mt-6">
+        <button type="submit" class="btn btn-outline">خروج از حساب</button>
+    </form>
+</section>
+{{end}}
