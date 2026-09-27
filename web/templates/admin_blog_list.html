@@ -1,0 +1,32 @@
+{{define "content"}}
+<div class="admin-page-header">
+    <h1 class="text-2xl font-extrabold">مدیریت بلاگ</h1>
+    <a href="/admin/blog/new" class="btn btn-green">+ پست جدید</a>
+</div>
+
+{{if .Posts}}
+<div class="card" style="padding:1rem; overflow-x:auto;">
+    <table class="simple-table">
+        <thead>
+            <tr><th>عنوان</th><th>وضعیت</th><th></th></tr>
+        </thead>
+        <tbody>
+            {{range .Posts}}
+            <tr>
+                <td>{{.Title}}</td>
+                <td>{{if .IsPublished}}<span class="badge badge-paid">منتشرشده</span>{{else}}<span class="badge badge-pending">پیش‌نویس</span>{{end}}</td>
+                <td class="admin-actions">
+                    <a href="/admin/blog/{{.ID}}/edit" class="btn-sm">ویرایش</a>
+                    <form method="post" action="/admin/blog/{{.ID}}/delete" onsubmit="return confirm('حذف بشه؟');">
+                        <button type="submit" class="btn-sm btn-danger">حذف</button>
+                    </form>
+                </td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+{{else}}
+<p style="color:var(--ink-500)">هنوز چیزی ثبت نشده.</p>
+{{end}}
+{{end}}

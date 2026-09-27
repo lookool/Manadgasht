@@ -1,0 +1,14 @@
+{{define "content"}}
+<h1 class="text-2xl font-extrabold mb-6">داشبورد</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <a href="/admin/packages" class="stat-card" style="display:block;">
+        <div class="value">{{.PackageCount}}</div>
+        <div class="label">تور/هتل ثبت‌شده</div>
+    </a>
+    <a href="/admin/blog" class="stat-card" style="display:block;">
+        <div class="value">{{.PostCount}}</div>
+        <div class="label">پست بلاگ</div>
+    </a>
+</div>
+{{end}}

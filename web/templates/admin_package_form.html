@@ -1,0 +1,75 @@
+{{define "content"}}
+{{$pkg := .Package}}
+<h1 class="text-2xl font-extrabold mb-6">{{.Title}}</h1>
+
+<form method="post" action="{{.FormPath}}" enctype="multipart/form-data" class="card admin-form">
+
+    <div class="form-group">
+        <label>عنوان</label>
+        <input type="text" name="title" value="{{if $pkg}}{{$pkg.Title}}{{end}}" required>
+        {{if .Errors.Title}}<div class="field-error">{{.Errors.Title}}</div>{{end}}
+    </div>
+
+    <div class="form-group">
+        <label>نامک (Slug) — فقط انگلیسی و خط تیره، برای آدرس صفحه</label>
+        <input type="text" name="slug" value="{{if $pkg}}{{$pkg.Slug}}{{end}}" style="direction:ltr;" placeholder="istanbul-3-nights" required>
+        {{if .Errors.Slug}}<div class="field-error">{{.Errors.Slug}}</div>{{end}}
+    </div>
+
+    <div class="form-group">
+        <label>نوع</label>
+        <select name="type" required>
+            <option value="tour" {{if $pkg}}{{if eq $pkg.Type "tour"}}selected{{end}}{{end}}>تور</option>
+            <option value="hotel" {{if $pkg}}{{if eq $pkg.Type "hotel"}}selected{{end}}{{end}}>هتل</option>
+            <option value="tour_hotel" {{if $pkg}}{{if eq $pkg.Type "tour_hotel"}}selected{{end}}{{end}}>پکیج تور + هتل</option>
+        </select>
+        {{if .Errors.Type}}<div class="field-error">{{.Errors.Type}}</div>{{end}}
+    </div>
+
+    <div class="form-group">
+        <label>مکان</label>
+        <input type="text" name="location" value="{{if $pkg}}{{$pkg.Location}}{{end}}" placeholder="مثلاً استانبول، ترکیه">
+    </div>
+
+    <div class="form-group">
+        <label>مدت (روز)</label>
+        <input type="number" name="duration_days" min="0" value="{{if $pkg}}{{$pkg.DurationDays}}{{end}}">
+    </div>
+
+    <div class="form-group">
+        <label>قیمت (تومان)</label>
+        <input type="number" name="price" min="0" step="1000" value="{{if $pkg}}{{$pkg.Price}}{{end}}" required>
+        {{if .Errors.Price}}<div class="field-error">{{.Errors.Price}}</div>{{end}}
+    </div>
+
+    <div class="form-group">
+        <label>توضیحات</label>
+        <textarea name="description" rows="6" style="width:100%; padding:.65rem .9rem; border:1.5px solid var(--green-100); border-radius:.6rem; font-family:inherit;">{{if $pkg}}{{$pkg.Description}}{{end}}</textarea>
+    </div>
+
+    <div class="form-group">
+        <label>عکس اصلی</label>
+        <input type="file" name="cover_image" accept="image/*">
+        {{if $pkg}}{{if $pkg.CoverImage}}<p class="text-xs mt-2" style="color:var(--ink-500)">عکس فعلی: {{$pkg.CoverImage}} (اگه فایل جدید انتخاب نکنی، همین می‌مونه)</p>{{end}}{{end}}
+    </div>
+
+    <div class="form-group">
+        <label>گالری (اختیاری — آدرس چند عکس دیگه، هر کدوم تو یه خط)</label>
+        <textarea name="gallery" rows="3" style="width:100%; padding:.65rem .9rem; border:1.5px solid var(--green-100); border-radius:.6rem; font-family:inherit;">{{if $pkg}}{{$pkg.Gallery}}{{end}}</textarea>
+    </div>
+
+    <div class="form-group" style="display:flex; gap:1.5rem;">
+        <label style="display:flex; align-items:center; gap:.4rem; font-weight:600;">
+            <input type="checkbox" name="is_international" {{if $pkg}}{{if $pkg.IsInternational}}checked{{end}}{{end}} style="width:auto;">
+            خارجی
+        </label>
+        <label style="display:flex; align-items:center; gap:.4rem; font-weight:600;">
+            <input type="checkbox" name="is_active" {{if $pkg}}{{if $pkg.IsActive}}checked{{else}}{{end}}{{else}}checked{{end}} style="width:auto;">
+            فعال (نمایش در سایت)
+        </label>
+    </div>
+
+    <button type="submit" class="btn btn-green">{{if .IsEdit}}ذخیره تغییرات{{else}}ساخت تور/هتل{{end}}</button>
+    <a href="/admin/packages" class="btn btn-outline">انصراف</a>
+</form>
+{{end}}

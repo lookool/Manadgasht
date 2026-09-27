@@ -1,0 +1,46 @@
+{{define "content"}}
+{{$post := .Post}}
+<h1 class="text-2xl font-extrabold mb-6">{{.Title}}</h1>
+
+<form method="post" action="{{.FormPath}}" enctype="multipart/form-data" class="card admin-form">
+
+    <div class="form-group">
+        <label>عنوان</label>
+        <input type="text" name="title" value="{{if $post}}{{$post.Title}}{{end}}" required>
+        {{if .Errors.Title}}<div class="field-error">{{.Errors.Title}}</div>{{end}}
+    </div>
+
+    <div class="form-group">
+        <label>نامک (Slug)</label>
+        <input type="text" name="slug" value="{{if $post}}{{$post.Slug}}{{end}}" style="direction:ltr;" placeholder="my-post-title" required>
+        {{if .Errors.Slug}}<div class="field-error">{{.Errors.Slug}}</div>{{end}}
+    </div>
+
+    <div class="form-group">
+        <label>خلاصه (برای کارت‌های لیست بلاگ)</label>
+        <input type="text" name="summary" value="{{if $post}}{{$post.Summary}}{{end}}">
+    </div>
+
+    <div class="form-group">
+        <label>متن کامل</label>
+        <textarea name="content" rows="10" style="width:100%; padding:.65rem .9rem; border:1.5px solid var(--green-100); border-radius:.6rem; font-family:inherit;">{{if $post}}{{$post.Content}}{{end}}</textarea>
+        {{if .Errors.Content}}<div class="field-error">{{.Errors.Content}}</div>{{end}}
+    </div>
+
+    <div class="form-group">
+        <label>عکس اصلی</label>
+        <input type="file" name="cover_image" accept="image/*">
+        {{if $post}}{{if $post.CoverImage}}<p class="text-xs mt-2" style="color:var(--ink-500)">عکس فعلی: {{$post.CoverImage}} (اگه فایل جدید انتخاب نکنی، همین می‌مونه)</p>{{end}}{{end}}
+    </div>
+
+    <div class="form-group">
+        <label style="display:flex; align-items:center; gap:.4rem; font-weight:600;">
+            <input type="checkbox" name="is_published" {{if $post}}{{if $post.IsPublished}}checked{{end}}{{else}}checked{{end}} style="width:auto;">
+            منتشر شود
+        </label>
+    </div>
+
+    <button type="submit" class="btn btn-green">{{if .IsEdit}}ذخیره تغییرات{{else}}ثبت پست{{end}}</button>
+    <a href="/admin/blog" class="btn btn-outline">انصراف</a>
+</form>
+{{end}}

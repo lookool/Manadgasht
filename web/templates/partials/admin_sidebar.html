@@ -1,0 +1,14 @@
+{{define "admin_sidebar"}}
+<aside class="admin-sidebar">
+    <div class="admin-brand">مانادگشت<span>پنل ادمین</span></div>
+    <nav>
+        <a href="/admin">داشبورد</a>
+        <a href="/admin/packages">مدیریت تور/هتل</a>
+        <a href="/admin/blog">مدیریت بلاگ</a>
+        <a href="/" target="_blank">مشاهده‌ی سایت ↗</a>
+    </nav>
+    <form method="post" action="/admin/logout" class="admin-logout">
+        <button type="submit">خروج از پنل</button>
+    </form>
+</aside>
+{{end}}
