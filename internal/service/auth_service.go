@@ -11,12 +11,7 @@ import (
 	"manadgasht/internal/repository"
 )
 
-// ErrInvalidCredentials وقتی برگردانده می‌شود که ایمیل/پسورد اشتباه باشد
-// (عمداً پیام دقیق نمی‌گیم که مشخص نشه ایمیل موجوده یا نه).
 var ErrInvalidCredentials = errors.New("ایمیل یا رمز عبور اشتباه است")
-
-// ErrReferralCodeNotFound وقتی برگردانده می‌شود که کد معرف واردشده در
-// دیتابیس پیدا نشود.
 var ErrReferralCodeNotFound = errors.New("کد معرف واردشده معتبر نیست")
 
 const sessionDuration = 30 * 24 * time.Hour // ۳۰ روز
@@ -26,7 +21,7 @@ type RegisterUserInput struct {
 	Email        string
 	Phone        string
 	Password     string
-	ReferralCode string // اختیاری
+	ReferralCode string
 }
 
 type RegisterAgentInput struct {
@@ -41,11 +36,12 @@ type RegisterAgentInput struct {
 type AuthService struct {
 	users    repository.UserRepository
 	agents   repository.AgentRepository
+	admins   repository.AdminRepository
 	sessions repository.SessionRepository
 }
 
-func NewAuthService(users repository.UserRepository, agents repository.AgentRepository, sessions repository.SessionRepository) *AuthService {
-	return &AuthService{users: users, agents: agents, sessions: sessions}
+func NewAuthService(users repository.UserRepository, agents repository.AgentRepository, admins repository.AdminRepository, sessions repository.SessionRepository) *AuthService {
+	return &AuthService{users: users, agents: agents, admins: admins, sessions: sessions}
 }
 
 // ---------- ثبت‌نام ----------
@@ -142,8 +138,6 @@ func (s *AuthService) RegisterAgent(in RegisterAgentInput) (*models.Agent, error
 		return nil, err
 	}
 
-	// کد معرف باید یکتا باشه؛ چون تصادفیه، احتمال برخورد خیلی کمه ولی
-	// چند بار تلاش می‌کنیم که مطمئن بشیم.
 	var code string
 	for i := 0; i < 5; i++ {
 		candidate, err := generateReferralCode()
@@ -208,6 +202,18 @@ func (s *AuthService) LoginAgent(email, password string) (token string, expiresA
 	return s.createSession(models.SubjectAgent, agent.ID)
 }
 
+// LoginAdmin برخلاف کاربر/همکار، با نام‌کاربری (نه ایمیل) وارد می‌شود.
+func (s *AuthService) LoginAdmin(username, password string) (token string, expiresAt time.Time, err error) {
+	admin, err := s.admins.FindByUsername(strings.TrimSpace(username))
+	if err != nil {
+		return "", time.Time{}, ErrInvalidCredentials
+	}
+	if bcrypt.CompareHashAndPassword([]byte(admin.PasswordHash), []byte(password)) != nil {
+		return "", time.Time{}, ErrInvalidCredentials
+	}
+	return s.createSession(models.SubjectAdmin, admin.ID)
+}
+
 func (s *AuthService) createSession(subjectType models.SubjectType, subjectID uint) (string, time.Time, error) {
 	token, err := generateToken(32)
 	if err != nil {
@@ -233,7 +239,7 @@ func (s *AuthService) Logout(token string) error {
 	return s.sessions.Delete(token)
 }
 
-// ---------- گرفتن کاربر/همکار فعلی از روی توکن نشست ----------
+// ---------- گرفتن کاربر/همکار/ادمین فعلی از روی توکن نشست ----------
 
 func (s *AuthService) CurrentUser(token string) (*models.User, error) {
 	if token == "" {
@@ -257,8 +263,17 @@ func (s *AuthService) CurrentAgent(token string) (*models.Agent, error) {
 	return s.agents.FindByID(session.SubjectID)
 }
 
-// isDuplicateKeyError تشخیص ساده‌ی خطای نقض uniqueIndex در Postgres،
-// بدون وابستگی مستقیم به pgconn (فقط بر اساس متن خطا).
+func (s *AuthService) CurrentAdmin(token string) (*models.Admin, error) {
+	if token == "" {
+		return nil, ErrInvalidCredentials
+	}
+	session, err := s.sessions.FindValidByToken(token)
+	if err != nil || session.SubjectType != models.SubjectAdmin {
+		return nil, ErrInvalidCredentials
+	}
+	return s.admins.FindByID(session.SubjectID)
+}
+
 func isDuplicateKeyError(err error) bool {
 	return err != nil && strings.Contains(strings.ToLower(err.Error()), "duplicate key")
 }
