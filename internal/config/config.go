@@ -15,6 +15,8 @@ type Config struct {
 	DBPassword string
 	DBName     string
 	DBSSLMode  string
+	AdminUsername string
+	AdminPassword string
 }
 
 // Load reads the .env file (if present) and returns a populated Config.
@@ -31,6 +33,8 @@ func Load() *Config {
 		DBPassword: getEnv("DB_PASSWORD", ""),
 		DBName:     getEnv("DB_NAME", "manadgasht"),
 		DBSSLMode:  getEnv("DB_SSLMODE", "disable"),
+		AdminUsername: getEnv("ADMIN_USERNAME", "admin"),
+		AdminPassword: getEnv("ADMIN_PASSWORD", "change-me-now"),
 	}
 }
 
