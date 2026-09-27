@@ -26,13 +26,11 @@ func main() {
 	cfg := config.Load()
 	db := database.Connect(cfg)
 
-	// وایرینگ لایه‌ها: repository (دیتابیس خام) → service (منطق تجاری)
-	// → handlers (HTTP). هر لایه فقط لایه‌ی زیر خودش رو می‌شناسه، و این
-	// فایل تنها جایی است که همه رو به هم وصل می‌کنه.
 	packageRepo := repository.NewPackageRepository(db)
 	blogRepo := repository.NewBlogRepository(db)
 	userRepo := repository.NewUserRepository(db)
 	agentRepo := repository.NewAgentRepository(db)
+	adminRepo := repository.NewAdminRepository(db)
 	sessionRepo := repository.NewSessionRepository(db)
 	orderRepo := repository.NewOrderRepository(db)
 	withdrawalRepo := repository.NewWithdrawalRepository(db)
@@ -40,7 +38,7 @@ func main() {
 
 	packageService := service.NewPackageService(packageRepo)
 	blogService := service.NewBlogService(blogRepo)
-	authService := service.NewAuthService(userRepo, agentRepo, sessionRepo)
+	authService := service.NewAuthService(userRepo, agentRepo, adminRepo, sessionRepo)
 	orderService := service.NewOrderService(db, packageRepo, orderRepo, agentRepo, userRepo, commissionRepo)
 	walletService := service.NewWalletService(db, agentRepo, withdrawalRepo)
 
@@ -64,8 +62,6 @@ func main() {
 		}
 	}()
 
-	// خاموشی آرام: با Ctrl+C یا سیگنال kill، درخواست‌های در حال پردازش
-	// قبل از بستن کامل سرور فرصت تموم‌شدن پیدا می‌کنن.
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 	<-stop
