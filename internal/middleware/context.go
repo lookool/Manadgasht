@@ -1,10 +1,9 @@
 package middleware
 
-// نام کوکی‌های نشست؛ کاربر عادی و همکار جدا نگه داشته می‌شن تا یک
-// مرورگر بتونه هم‌زمان هم به‌عنوان کاربر و هم همکار وارد باشه.
 const (
 	UserCookieName  = "manadgasht_user_session"
 	AgentCookieName = "manadgasht_agent_session"
+	AdminCookieName = "manadgasht_admin_session"
 )
 
 type contextKey string
@@ -12,4 +11,5 @@ type contextKey string
 const (
 	userContextKey  contextKey = "current_user"
 	agentContextKey contextKey = "current_agent"
+	adminContextKey contextKey = "current_admin"
 )
