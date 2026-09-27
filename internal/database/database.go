@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
@@ -31,6 +32,7 @@ func Connect(cfg *config.Config) *gorm.DB {
 	}
 
 	seedCommissionDefaults(db)
+	seedDefaultAdmin(db, cfg)
 
 	slog.Info("اتصال به دیتابیس با موفقیت انجام شد")
 	return db
@@ -68,4 +70,33 @@ func seedCommissionDefaults(db *gorm.DB) {
 			db.Create(&models.CommissionSetting{Type: t, Percentage: percentage})
 		}
 	}
+}
+
+// seedDefaultAdmin اگر هنوز هیچ ادمینی تو دیتابیس نباشه، یکی از روی
+// ADMIN_USERNAME/ADMIN_PASSWORD تو .env می‌سازه. بعد از اولین ورود،
+// حتماً رمزش رو از پنل عوض کن.
+func seedDefaultAdmin(db *gorm.DB, cfg *config.Config) {
+	var count int64
+	db.Model(&models.Admin{}).Count(&count)
+	if count > 0 {
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(cfg.AdminPassword), bcrypt.DefaultCost)
+	if err != nil {
+		slog.Error("ساخت رمز ادمین پیش‌فرض ناموفق بود", "error", err)
+		return
+	}
+
+	admin := &models.Admin{
+		FullName:     "مدیر سایت",
+		Username:     cfg.AdminUsername,
+		PasswordHash: string(hash),
+	}
+	if err := db.Create(admin).Error; err != nil {
+		slog.Error("ساخت حساب ادمین پیش‌فرض ناموفق بود", "error", err)
+		return
+	}
+
+	slog.Warn("یک حساب ادمین پیش‌فرض ساخته شد؛ حتماً بعد از ورود رمزش رو عوض کن", "username", cfg.AdminUsername)
 }
