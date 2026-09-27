@@ -12,8 +12,6 @@ import (
 
 // funcMap توابع کمکی قابل استفاده داخل فایل‌های html/template.
 var funcMap = template.FuncMap{
-	// formatPrice عدد قیمت را با جداکننده‌ی هزارگان چاپ می‌کند،
-	// مثلاً ۱۲۰۰۰۰۰۰ → 12,000,000
 	"formatPrice": func(price float64) string {
 		s := fmt.Sprintf("%.0f", price)
 		n := len(s)
@@ -31,12 +29,8 @@ var funcMap = template.FuncMap{
 	},
 }
 
-// هر صفحه یک فایل "content" جدا دارد؛ چون همه از همین نام "content"
-// استفاده می‌کنند، نمی‌شود همه را با هم در یک template.Template پارس کرد
-// (باعث تداخل/پنیک می‌شود). به همین دلیل برای هر صفحه، یک نسخه‌ی جدا از
-// base+header+footer کلون می‌کنیم و فقط همان یک فایل content را رویش
-// اضافه می‌کنیم؛ نتیجه در pages کش می‌شود تا هر بار از نو پارس نشود.
 var pages = map[string]*template.Template{}
+var adminPages = map[string]*template.Template{}
 
 func init() {
 	pageFiles := []string{
@@ -69,12 +63,34 @@ func init() {
 		clone = template.Must(clone.ParseFiles("web/templates/" + page))
 		pages[page] = clone
 	}
+
+	// پنل ادمین لایوت جدای خودش رو داره (بدون هدر/فوتر عمومی سایت،
+	// با یک سایدبار)، پس یک base دوم و یک map جدا براش می‌سازیم.
+	adminPageFiles := []string{
+		"admin_login.html",
+		"admin_dashboard.html",
+		"admin_packages_list.html",
+		"admin_package_form.html",
+		"admin_blog_list.html",
+		"admin_blog_form.html",
+	}
+
+	adminBase := template.Must(template.New("admin_base.html").Funcs(funcMap).ParseFiles(
+		"web/templates/admin_base.html",
+		"web/templates/partials/admin_sidebar.html",
+	))
+
+	for _, page := range adminPageFiles {
+		clone, err := adminBase.Clone()
+		if err != nil {
+			log.Fatalf("خطا در کلون تمپلیت ادمین برای %s: %v", page, err)
+		}
+		clone = template.Must(clone.ParseFiles("web/templates/" + page))
+		adminPages[page] = clone
+	}
 }
 
 // render یک صفحه‌ی خاص را به همراه لایوت اصلی (base) رندر می‌کند.
-// data باید یک map باشد که داده‌های مورد نیاز صفحه را در بر دارد؛
-// CurrentYear و CurrentUser/CurrentAgent (برای هدر) همیشه خودکار
-// اضافه می‌شوند.
 func render(w http.ResponseWriter, r *http.Request, name string, data map[string]interface{}) {
 	tmpl, ok := pages[name]
 	if !ok {
@@ -88,14 +104,9 @@ func render(w http.ResponseWriter, r *http.Request, name string, data map[string
 	}
 	data["CurrentYear"] = time.Now().Year()
 
-	// Region همیشه باید مقدار داشته باشه (حتی خالی)، چون تمپلیت هدر
-	// برای مشخص‌کردن آیتم فعال منو، همیشه با eq مقایسه‌ش می‌کنه.
 	if _, ok := data["Region"]; !ok {
 		data["Region"] = ""
 	}
-
-	// هدر روی همه‌ی صفحات نمایش داده می‌شه و باید بدونه کاربر/همکار
-	// لاگین کرده یا نه، پس این‌ها همیشه (نه فقط تو صفحات مربوطه) ست میشن.
 	if _, ok := data["CurrentUser"]; !ok {
 		data["CurrentUser"] = middleware.CurrentUser(r)
 	}
@@ -107,6 +118,30 @@ func render(w http.ResponseWriter, r *http.Request, name string, data map[string
 
 	if err := tmpl.ExecuteTemplate(w, "base", data); err != nil {
 		log.Println("خطا در اجرای تمپلیت:", err)
+		http.Error(w, "خطای داخلی سرور", http.StatusInternalServerError)
+	}
+}
+
+// renderAdmin مشابه render ولی برای صفحات پنل ادمین (لایوت جدا، بدون
+// هدر/فوتر عمومی سایت).
+func renderAdmin(w http.ResponseWriter, r *http.Request, name string, data map[string]interface{}) {
+	tmpl, ok := adminPages[name]
+	if !ok {
+		log.Println("تمپلیت ادمین پیدا نشد:", name)
+		http.Error(w, "خطای داخلی سرور", http.StatusInternalServerError)
+		return
+	}
+
+	if data == nil {
+		data = map[string]interface{}{}
+	}
+	data["CurrentYear"] = time.Now().Year()
+	data["CurrentAdmin"] = middleware.CurrentAdmin(r)
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	if err := tmpl.ExecuteTemplate(w, "admin_base", data); err != nil {
+		log.Println("خطا در اجرای تمپلیت ادمین:", err)
 		http.Error(w, "خطای داخلی سرور", http.StatusInternalServerError)
 	}
 }
